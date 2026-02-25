@@ -1,40 +1,86 @@
 // background.js (manifest v3 service worker)
 
 // Keyboard shortcut listener
-chrome.commands.onCommand.addListener((command) => {
+chrome.commands.onCommand.addListener(async (command) => {
   if (command === "declutter-tabs") {
-    declutterTabs();
+    const result = await declutterTabs().catch(() => ({ closedCount: 0, error: true }));
+
+    const badgeLabel = result.error ? "ERR" : String(result.closedCount);
+    const badgeColor = result.error ? "#E53935" : "#4CAF50";
+
+    await chrome.action.setBadgeText({ text: badgeLabel });
+    await chrome.action.setBadgeBackgroundColor({ color: badgeColor });
+
+    setTimeout(() => chrome.action.setBadgeText({ text: "" }), 2000);
   }
 });
 
 // Popup button listener
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "DECLUTTER_NOW") {
-    declutterTabs().then((result) => sendResponse(result));
-    return true; // async response
+    declutterTabs()
+      .then((result) => sendResponse(result))
+      .catch(() => sendResponse({ closedCount: 0, error: true }));
+    return true;
   }
 });
-//====================================================================================================================================================================================
-async function declutterTabs() {
-  // Get current-window tabs
-  const tabs = await chrome.tabs.query({ currentWindow: true });
-  const settings = await chrome.storage.sync.get({
-  google: true,
-  youtube: true,
-  reddit: true,
-  chatgpt: true 
-});
 
-  const tabsToClose = []; //creats an empty array to collect tabs which are to be closed
+//=====================================================================================
+
+function normalizeInput(raw) {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  return "https://" + trimmed;
+}
+
+function matchesTab(savedRaw, tabUrl) {
+  try {
+    const savedFull = normalizeInput(savedRaw);
+    const saved = new URL(savedFull);
+    const tab = new URL(tabUrl);
+
+    const savedHasPath = saved.pathname !== "/" || savedFull.includes("/", 8);
+    // 8 = length of "https://" so we skip the protocol slashes
+
+    if (!savedHasPath) {
+      // Case 1: domain only — close homepage only
+      const hostnameMatch =
+        tab.hostname === saved.hostname ||
+        tab.hostname === "www." + saved.hostname ||
+        "www." + tab.hostname === saved.hostname;
+
+      const isHomePage = tab.pathname === "/" || tab.pathname === "";
+
+      return hostnameMatch && isHomePage && tab.search === "";
+    } else {
+      // Case 2: full URL — exact match including query params
+      return (
+        tab.hostname === saved.hostname &&
+        tab.pathname === saved.pathname &&
+        tab.search === saved.search
+      );
+    }
+  } catch (e) {
+    return false;
+  }
+}
+
+//===============================================================================
+
+async function declutterTabs() {
+  const tabs = await chrome.tabs.query({ currentWindow: true });
+  const { customSites } = await chrome.storage.sync.get({ customSites: [] });
+
+  const tabsToClose = [];
 
   for (const tab of tabs) {
-    // Basic safety filters
-    if (tab.active) continue;      // skips active tab
-    if (tab.pinned) continue;      // skips pinned tabs
-    if (!tab.url) continue;        // skip tabs with no URL // i dont know why is exist, like we are suppose to close tabs with no urls, but if chatgpt says he must be correct   
+    if (tab.active) continue;
+    if (tab.pinned) continue;
+    if (!tab.url) continue;
 
-    // new-tab detection 
-    //=====================================
+    // New-tab detection
     if (
       tab.url.startsWith("chrome://newtab") ||
       tab.url.startsWith("chrome://new-tab-page") ||
@@ -45,151 +91,27 @@ async function declutterTabs() {
       tabsToClose.push(tab.id);
       continue;
     }
-    //=====================================
-    // for empty google pages but not all
-   try {
-  const url = new URL(tab.url);
 
-  const isGoogleDomain =
-    url.hostname === "google.com" ||
-    url.hostname === "www.google.com" ||
-    url.hostname === "google.co.in" ||
-    url.hostname === "www.google.co.in";
-
-  // Read the real search query parameter
-  const hasSearchQuery = url.searchParams.has("q");
-
-  // Google home page (even with tracking params)
-  const isGoogleHome =
-    url.pathname === "/" && !hasSearchQuery;
-
-  if (settings.google && isGoogleDomain && isGoogleHome) {
-    console.log("Declutter: closing Google home page:", tab.url);
-    tabsToClose.push(tab.id);
-    continue;
+    // Match against user's custom site list
+    const matched = customSites.some((site) => matchesTab(site, tab.url));
+    if (matched) {
+      console.log("Declutter: closing matched tab:", tab.url);
+      tabsToClose.push(tab.id);
+      continue;
+    }
   }
 
-} catch (e) {
-  // invalid URL, ignore
-}
-     //=====================================
-    // for youtube home pages
-      try {
-  const url = new URL(tab.url);
-
-  const isYouTubeDomain =
-    url.hostname === "www.youtube.com" ||
-    url.hostname === "youtube.com" ||
-    url.hostname === "m.youtube.com";
-
-  const isYouTubeHome =
-    url.pathname === "/" ||
-    url.pathname.startsWith("/feed");
-
-  const isWatchingVideo =
-    url.pathname === "/watch";
-
-  const isSearchPage =
-    url.pathname === "/results";
-
- if (
-  settings.youtube &&
-  isYouTubeDomain &&
-  isYouTubeHome &&
-  !isWatchingVideo &&
-  !isSearchPage
-) {
- 
-    console.log("Declutter: closing YouTube home:", tab.url);
-    tabsToClose.push(tab.id);
-    continue;
- 
-      }} 
-catch (e) {
-  // safe ignore
-}
- //=====================================
-   
- // for reddit
- try {
-  const url = new URL(tab.url);
-
-  const isRedditDomain =
-    url.hostname === "www.reddit.com" ||
-    url.hostname === "reddit.com" ||
-    url.hostname === "old.reddit.com";
-
-  const isRedditHome =
-    url.pathname === "/";
-
-  const isPopularOrAll =
-    url.pathname === "/r/popular" ||
-    url.pathname === "/r/all";
-
-  const isSearchPage =
-    url.pathname === "/search";
-
-  if (
-  settings.reddit &&
-  isRedditDomain &&
-  (isRedditHome || isPopularOrAll) &&
-  !isSearchPage
-) 
-{
-    console.log("Declutter: closing Reddit feed:", tab.url);
-    tabsToClose.push(tab.id);
-    continue;
-  }
-} catch (e) {
-  // safe ignore
-}
-
-
-//=====================================
-// for ChatGPT (close empty tabs only)
-try {
-  const url = new URL(tab.url);
-
-  const isChatGPTDomain =
-    url.hostname === "chatgpt.com";
-
-  // Empty ChatGPT home (no conversation started)
-  const isChatGPTHome =
-    url.pathname === "/";
-
-  // Active conversation pages always start with /c/
-  const isChatGPTConversation =
-    url.pathname.startsWith("/c/");
-
-  if (
-    settings.chatgpt &&
-    isChatGPTDomain &&
-    isChatGPTHome &&
-    !isChatGPTConversation
-  ) {
-    console.log("Declutter: closing empty ChatGPT tab:", tab.url);
-    tabsToClose.push(tab.id);
-    continue;
-  }
-} catch (e) {
-  // safe ignore
-}
-
-
-  } // end for loop
-
-      // Remove collected tabs (if any)
-           if (tabsToClose.length > 0) {
-      try {
+  if (tabsToClose.length > 0) {
+    try {
       console.log("Declutter: removing tabs:", tabsToClose);
       await chrome.tabs.remove(tabsToClose);
-       } catch (err) {
+    } catch (err) {
       console.error("Declutter: error removing tabs:", err);
-       }
-     } else {
-    console.log("Declutter: nothing to remove.");
     }
+  } else {
+    console.log("Declutter: nothing to remove.");
+  }
 
   return { closedCount: tabsToClose.length };
 }
-//============================================================================
+//===================================================================

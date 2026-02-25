@@ -1,241 +1,271 @@
 body {
-  
-  width: 300px;
+  width: 350px;
+  height: 600px;
+  margin: 0;
   background-color: #F2E8C9;
-  height: 500px;
-  
-  margin: 0px;
-
- flex-direction: column;
- 
-   display: flex;
-
-
-  }
-
-.container1 {
-  
- 
-  height: 50px;
-  width: 100%;
-  font-size: 28px;
-  
-  margin: 0px;
-  padding: 0px;
+  font-family: "Inconsolata", monospace;
   display: flex;
-  justify-content: center; 
-  align-items: center;  
-  border-bottom: solid 2px black; 
-
- 
-}
-.container2 {
-  
-  border-bottom: solid 2px black; 
-  height: 180px;
-  width: 100%;
-  
-  
-  margin: 0px;
-  padding: 0px;
-  display: flex;
- 
-  align-items: center;   
   flex-direction: column;
- 
+}
 
+/* ── Header ─────────────────────────────────────── */
+.container1 {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  border-bottom: 2px solid black;
+  margin: 0;
+  padding: 0;
+}
 
- 
+.container1 p { margin: 0; }
+
+/* ── Declutter button section ────────────────────── */
+.container2 {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid black;
+  gap: 4px;
 }
 
 .info {
-  font-size: 16px;
-
+  font-size: 15px;
+  margin: 0 0 8px;
+  color: rgb(36, 38, 34);
 }
+
+.result {
+  font-size: 15px;
+  margin: 4px 0 0;
+  color: rgb(36, 38, 34);
+  min-height: 20px;
+  margin-top: 20px;
+}
+
+/* ── Settings heading ────────────────────────────── */
+.container3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+}
+
+.container3 p { margin: 0; }
 
 .settings {
+  font-size: 18px;
+}
+
+/* ── Sub-heading ─────────────────────────────────── */
+.container4 {
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.container4 p { margin: 0; font-size: 13px; }
+
+/* ── Add row ─────────────────────────────────────── */
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  margin-bottom: 10px;
+}
+
+#url-input {
+  flex: 1;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 2px solid rgb(36, 38, 34);
+  background: rgb(255, 255, 238);
+  font-size: 13px;
+  font-family: "Inconsolata", monospace;
+  outline: none;
+  color: rgb(36, 38, 34);
+}
+
+#url-input::placeholder { color: #aaa; }
+
+#add-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  border: 2px solid rgb(36, 38, 34);
+  background: rgb(255, 255, 238);
   font-size: 20px;
-
-}
-.result {
-  margin-top: 30px;
-   justify-content: center; 
-  align-items: center;  
-  font-size: 18px; 
-
-}
-
-.container3{
-   display: flex;
-  align-items: center;   
-  flex-direction: column;
-  height: 30px;
-  width: 100%;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   justify-content: center;
-
-}
-.container4{
-   display: flex;
-   
-  flex-direction: column;
-  height: 50px;
-  width: 100%;
-
+  padding: 0;
+  color: rgb(36, 38, 34);
+  font-family: "Inconsolata", monospace;
+  transition: background 0.15s, transform 0.1s;
+  /* reset inherited button styles */
+  position: static;
+  outline: none;
 }
 
+#add-button:hover  { background: #d6f5d6; }
+#add-button:active { transform: scale(0.92); }
 
+/* ── Site list ───────────────────────────────────── */
 .list {
   display: flex;
-  flex-direction: column;   /* stack rows vertically */
-  gap: 12px;                /* space between rows */
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 190px;
+  padding: 0 14px;
 }
+
 .row {
   display: flex;
-  align-items: center;      /* vertical alignment */
-  justify-content: space-between; /* spread items */
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #F2E8C9;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,238,0.6);
+  border: 1.5px solid rgba(36,38,34,0.15);
 }
-.logo {
-  width: 28px;
-  height: 28px;
-}
+
 .name {
-  flex: 1;                 /* takes remaining space */
-  margin-left: 12px;
-  font-size: 16px;
-  font-weight: 500;
+  flex: 1;
+  font-size: 13px;
+  word-break: break-all;
+  color: rgb(36, 38, 34);
 }
-.switch {
-  position: relative;
-  width: 44px;
+
+.remove-btn {
+  width: 24px;
   height: 24px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  inset: 0;
-  background-color: #ccc;
-  border-radius: 24px;
-  transition: 0.3s;
-}
-
-.slider::before {
-  content: "";
-  position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
+  min-width: 24px;
   border-radius: 50%;
-  transition: 0.3s;
+  border: 2px solid rgb(36, 38, 34);
+  background: rgb(255, 255, 238);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s;
+  /* reset */
+  position: static;
+  outline: none;
+  font-family: "Inconsolata", monospace;
 }
 
-.switch input:checked + .slider {
-  background-color: #4CAF50;
+.remove-btn:hover { background: #f5c6c6; }
+
+.empty {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  margin: 10px 0;
 }
 
-.switch input:checked + .slider::before {
-  transform: translateX(20px);
+/* ── 3-D Declutter button ────────────────────────── */
+button#mybutton {
+  width: 170px;
+  height: 60px;
+  position: relative;
+  background: none;
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }
 
+.top {
+  width: 100%;
+  height: 100%;
+  background: rgb(255, 255, 238);
+  font-family: "Inconsolata", monospace;
+  font-size: 16px;
+  color: rgb(36, 38, 34);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7mm;
+  outline: 2px solid rgb(36, 38, 34);
+  transition: 0.2s;
+  position: relative;
+  overflow: hidden;
+}
 
+.bottom {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgb(229, 229, 199);
+  top: 10px;
+  left: 0;
+  border-radius: 7mm;
+  outline: 2px solid rgb(36, 38, 34);
+  z-index: -1;
+}
 
-  button {
-        width: 170px;
-        height: 60px;
-        position: relative;
-        background: none;
-        outline: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-      }
+.bottom::before {
+  position: absolute;
+  content: "";
+  width: 2px;
+  height: 9px;
+  background: rgb(36, 38, 34);
+  bottom: 0;
+  left: 15%;
+}
 
-      .top {
-        width: 100%;
-        height: 100%;
-        background: rgb(255, 255, 238);
-        font-family: "Inconsolata", monospace;
-        font-size: 16px;
-        color: rgb(36, 38, 34);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 7mm;
-        outline: 2px solid rgb(36, 38, 34);
-        transition: 0.2s;
-        position: relative;
-        overflow: hidden;
-      }
-       .bottom {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: rgb(229, 229, 199);
-        top: 10px;
-        left: 0;
-        border-radius: 7mm;
-        outline: 2px solid rgb(36, 38, 34);
-        z-index: -1;
-      }
-      
-       .bottom::before {
-        position: absolute;
-        content: "";
-        width: 2px;
-        height: 9px;
-        background: rgb(36, 38, 34);
-        bottom: 0;
-        left: 15%;
-      }
+.bottom::after {
+  position: absolute;
+  content: "";
+  width: 2px;
+  height: 9px;
+  background: rgb(36, 38, 34);
+  bottom: 0;
+  left: 85%;
+}
 
-      .bottom::after {
-        position: absolute;
-        content: "";
-        width: 2px;
-        height: 9px;
-        background: rgb(36, 38, 34);
-        bottom: 0;
-        left: 85%;
-      }
+button#mybutton:active .top {
+  transform: translateY(10px);
+}
 
-        button:active .top {
-        transform: translateY(10px);
-      }
-      button::before {
-        position: absolute;
-        content: "";
-        width: calc(100% + 2px);
-        height: 100%;
-        background: rgb(140, 140, 140);
-        top: 14px;
-        left: -1px;
-        border-radius: 7mm;
-        outline: 2px solid rgb(36, 38, 34);
-        z-index: -1;
-      }
-      .top::before {
-        position: absolute;
-        content: "";
-        width: 15px;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.1);
-        transform: skewX(30deg);
-        left: -20px;
-        transition: 0.25s;
-      }
-      button:active .top::before {
-        left: calc(100% + 20px);
-      }
-     
+button#mybutton::before {
+  position: absolute;
+  content: "";
+  width: calc(100% + 2px);
+  height: 100%;
+  background: rgb(140, 140, 140);
+  top: 14px;
+  left: -1px;
+  border-radius: 7mm;
+  outline: 2px solid rgb(36, 38, 34);
+  z-index: -1;
+}
 
+.top::before {
+  position: absolute;
+  content: "";
+  width: 15px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  transform: skewX(30deg);
+  left: -20px;
+  transition: 0.25s;
+}
 
+button#mybutton:active .top::before {
+  left: calc(100% + 20px);
+}

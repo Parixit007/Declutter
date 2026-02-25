@@ -4,77 +4,36 @@
   <meta charset="UTF-8" />
   <title>Declutter</title>
   <link rel="stylesheet" href="popup.css" />
- 
-
 </head>
 <body>
 
-      <div class ="container1">
-        <p>DECLUTTER</p>
-      </div>
-
-<div class="container2">
-  <p class="info"> Close unnecessary tabs with one click.</p> 
- <button type="button" id="mybutton">
-        <div class="top">Declutter Now!</div>
-        <div class="bottom"></div>
-      </button>
-      <p id="result" class="result"></p>
-</div>
-
-<div class="container3">
-
-  <p class="settings">Settings</p>
-
-  
-</div>
-
- <div class="container4">
- <p class="info">▸ choose sites to close</p>
- 
-
-</div>
-
-<div class="list">
-
-  <div class="row">
-   
-    <span class="name">Google</span>
-    <label class="switch">
-      <input type="checkbox" id="toggle-google" checked>
-      <span class="slider"></span>
-    </label>
+  <div class="container1">
+    <p>DECLUTTER</p>
   </div>
 
-  <div class="row">
-  
-    <span class="name">YouTube</span>
-    <label class="switch">
-      <input type="checkbox" id="toggle-youtube" checked>
-      <span class="slider"></span>
-    </label>
+  <div class="container2">
+    <p class="info">Close unnecessary tabs with one click.</p>
+    <button type="button" title="Ctrl / ⌘ + Shift + Y" id="mybutton">
+      <span class="top">Declutter Now!</span>
+      <span class="bottom"></span>
+    </button>
+    <p id="result" class="result"></p>
   </div>
 
-  <div class="row">
-
-    <span class="name">Reddit</span>
-    <label class="switch">
-      <input type="checkbox" id="toggle-reddit" checked>
-      <span class="slider"></span>
-    </label>
-  </div>
-  <div class="row">
-   
-    <span class="name">ChatGPT</span>
-    <label class="switch">
-      <input type="checkbox" id="toggle-chatgpt" checked>
-      <span class="slider"></span>
-    </label>
+  <div class="container3">
+    <p class="settings">Settings</p>
   </div>
 
-</div>
+  <div class="container4">
+    <p class="info">▸ add sites to close</p>
+  </div>
 
+  <div class="add-row">
+    <input type="text" id="url-input" placeholder="e.g. google.com" />
+    <button type="button" id="add-button">+</button>
+  </div>
 
+  <div class="list" id="site-list"></div>
 
   <script src="popup.js"></script>
 </body>
